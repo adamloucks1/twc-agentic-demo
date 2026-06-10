@@ -52,7 +52,7 @@ function escapeHtml(s) {
 }
 
 /* ---------------- streaming runner ---------------- */
-async function runAgent({ scenario, message, history = [], onToken, onThinking, onOutbox, onDone, onError }) {
+async function runAgent({ scenario, message, history = [], onToken, onThinking, onOutbox, onQuote, onDone, onError }) {
   busy = true;
   setLive(true);
   let thinkingEl = null;
@@ -98,6 +98,8 @@ async function runAgent({ scenario, message, history = [], onToken, onThinking, 
           addActivity("result", "Result from " + ev.name, ev.preview);
         } else if (ev.type === "outbox") {
           onOutbox && onOutbox(ev.drafts);
+        } else if (ev.type === "quote") {
+          onQuote && onQuote(ev.quotes);
         } else if (ev.type === "stats") {
           const badge = $("#stats-badge");
           const tools = ev.tool_calls ? ` · ${ev.tool_calls} tool calls` : "";
@@ -172,7 +174,7 @@ $("#chat-form").addEventListener("submit", (e) => {
   sendChat($("#chat-input").value);
 });
 
-$$(".chip").forEach((c) =>
+$$("#chips .chip").forEach((c) =>
   c.addEventListener("click", () => sendChat(c.textContent))
 );
 
@@ -279,6 +281,68 @@ $("#analyze-doc").addEventListener("click", async () => {
   btn.textContent = "Analyze document";
 });
 
+/* ---------------- tab 4: quote builder ---------------- */
+function renderQuotes(quotes) {
+  const list = $("#quote-list");
+  list.innerHTML = "";
+  $("#quote-count").textContent = quotes.length ? "(" + quotes.length + ")" : "";
+  if (!quotes.length) {
+    list.innerHTML = '<span class="placeholder">Finished quotes appear here.</span>';
+    return;
+  }
+  const money = (n) =>
+    "$" + Number(n || 0).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  quotes.forEach((q, i) => {
+    const div = document.createElement("div");
+    div.className = "quote-card";
+    const fee = Number(q.expedite_fee || 0);
+    div.innerHTML =
+      `<div class="q-head">QUOTE #${String(i + 1).padStart(3, "0")} &mdash; ${escapeHtml(q.customer)}</div>` +
+      `<pre class="q-items">${escapeHtml(q.line_items)}</pre>` +
+      `<div class="q-row"><span>Subtotal</span><span>${money(q.subtotal)}</span></div>` +
+      (fee ? `<div class="q-row"><span>Expedite fee</span><span>${money(fee)}</span></div>` : "") +
+      `<div class="q-row q-total"><span>Total</span><span>${money(q.total)}</span></div>` +
+      `<div class="q-meta">Lead time: ${escapeHtml(q.lead_time || "TBD")} &middot; Quote valid ${Number(q.valid_days) || 30} days</div>` +
+      (q.notes ? `<div class="q-meta q-notes">${escapeHtml(q.notes)}</div>` : "");
+    list.appendChild(div);
+  });
+}
+
+async function buildQuote(text) {
+  if (busy || !text.trim()) return;
+  $("#quote-input").value = "";
+  clearActivity();
+  const btn = $("#quote-send");
+  btn.disabled = true;
+  btn.textContent = "Pricing…";
+  const box = $("#quote-summary");
+  box.innerHTML = "";
+  let acc = "";
+
+  await runAgent({
+    scenario: "quote",
+    message: "Build a quote for this customer request:\n\n" + text,
+    onToken: (t) => {
+      acc += t;
+      box.textContent = acc;
+      box.scrollTop = box.scrollHeight;
+    },
+    onQuote: renderQuotes,
+  });
+
+  btn.disabled = false;
+  btn.textContent = "Build quote";
+}
+
+$("#quote-form").addEventListener("submit", (e) => {
+  e.preventDefault();
+  buildQuote($("#quote-input").value);
+});
+
+$$("#quote-chips .chip").forEach((c) =>
+  c.addEventListener("click", () => buildQuote(c.textContent))
+);
+
 /* ---------------- reset ---------------- */
 $("#reset-btn").addEventListener("click", async () => {
   if (busy) return;
@@ -287,7 +351,9 @@ $("#reset-btn").addEventListener("click", async () => {
   chatLog.innerHTML = "";
   $("#workflow-summary").innerHTML = '<span class="placeholder">Run the workflow to generate the morning summary.</span>';
   $("#doc-result").innerHTML = '<span class="placeholder">Select a document and click Analyze.</span>';
+  $("#quote-summary").innerHTML = '<span class="placeholder">Pick a request and the agent will price it.</span>';
   renderOutbox([]);
+  renderQuotes([]);
   clearActivity();
   actLog.innerHTML = '<div class="placeholder">Every step the agent takes shows up here — the difference between a chatbot and an agent.</div>';
 });
@@ -304,5 +370,6 @@ $("#reset-btn").addEventListener("click", async () => {
   }
   renderInbox(s.inbox);
   renderOutbox(s.outbox);
+  renderQuotes(s.quotes || []);
   renderDocs(s.documents);
 })();

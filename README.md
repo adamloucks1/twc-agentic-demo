@@ -1,6 +1,6 @@
 # TWC Offline Agentic AI Demo
 
-**Status:** Loop 1 complete — smoke test + server + streaming verified on Adam's PC (llama3.1:8b, 2026-06-09). Next: Loop 2, deploy to Spark.
+**Status:** Loop 1 complete (2026-06-09). Quote Builder tab added, tested headless + visually on Adam's PC (llama3.1:8b, 2026-06-10). Next: Loop 2, deploy to Spark.
 **Demo date:** Week of 2026-06-15 (TWC campus visit)
 **Hardware:** NVIDIA DGX Spark (128GB unified memory), runs fully offline
 **Purpose:** Show Texas Workforce Commission a live agentic AI demonstration supporting the grant partnership for the Agentic AI for Business training program. Lamar's network blocks AI tools, so this runs entirely on local hardware with no internet.
@@ -11,13 +11,14 @@
 
 A self-contained web app that runs a real LLM locally via Ollama. It simulates the agent a course participant would build: a business agent for **Gulf Coast Machining Co.**, a fictional CNC machine shop in Beaumont serving the petrochemical industry.
 
-Three scenarios, mapped to the course:
+Four scenarios, mapped to the course:
 
 | Tab | What TWC sees | Course tie-in |
 |---|---|---|
 | Business Agent | Chat with an agent that knows the business. Includes a **Chatbot vs. Agent toggle** — flip it off and the same model knows nothing. | Days 1–2 |
 | Morning Workflow | One click: agent reads the inbox, triages 6 emails, drafts replies in the company voice, writes an owner summary. Every step visible. | Day 3 |
 | Document Analysis | Agent reads an invoice, a safety incident report, or a vendor letter — extracts, summarizes, flags issues. | Practical SMB use |
+| Quote Builder | Paste a customer request; the agent prices it from the pricing sheet, runs every number through a **calculator tool** (LLMs can't do arithmetic — agents use tools), and produces a formal quote. | Tool-use lesson + SMB value |
 
 The right-hand **Agent Activity** panel shows every tool call and reasoning step live — the visual proof of "agent, not chatbot."
 

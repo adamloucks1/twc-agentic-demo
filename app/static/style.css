@@ -170,11 +170,11 @@ main {
 .chip:hover { color: var(--text); border-color: var(--red); }
 
 .composer { display: flex; gap: 10px; }
-#chat-input {
+.composer input {
   flex: 1; background: var(--panel-2); border: 1px solid var(--border);
   border-radius: var(--radius); color: var(--text); padding: 12px 14px; font-size: 0.95rem;
 }
-#chat-input:focus { outline: none; border-color: var(--red); }
+.composer input:focus { outline: none; border-color: var(--red); }
 button[type="submit"], .big-btn {
   background: var(--red); border: none; border-radius: var(--radius);
   color: #fff; font-weight: 600; padding: 12px 22px; font-size: 0.95rem; cursor: pointer;
@@ -231,5 +231,33 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
 .doc-result-col { display: flex; flex-direction: column; min-height: 0; }
 .doc-result-col h3 { font-size: 0.85rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 8px; }
 .doc-result-col .summary-box { flex: 1; max-height: none; }
+
+/* ---------------- quote builder (tab 4) ---------------- */
+.quote-cols { display: grid; grid-template-columns: 1fr 430px; gap: 16px; flex: 1; min-height: 0; margin-top: 14px; }
+.quote-result-col, .quote-card-col { display: flex; flex-direction: column; min-height: 0; }
+.quote-result-col h3, .quote-card-col h3 {
+  font-size: 0.85rem; color: var(--muted); text-transform: uppercase;
+  letter-spacing: 0.6px; margin-bottom: 8px;
+}
+.quote-result-col .summary-box { flex: 1; max-height: none; }
+#quote-list { overflow-y: auto; flex: 1; display: flex; flex-direction: column; gap: 10px; }
+.quote-card {
+  background: var(--panel-2); border: 1px solid var(--border);
+  border-left: 3px solid var(--amber); border-radius: 8px;
+  padding: 12px 14px; font-size: 0.8rem; animation: slideIn 0.3s ease;
+}
+.q-head { font-weight: 650; letter-spacing: 0.4px; margin-bottom: 8px; }
+.q-items {
+  font-family: Consolas, monospace; font-size: 0.74rem; color: var(--muted);
+  white-space: pre-wrap; word-break: break-word;
+  border-bottom: 1px dashed var(--border); padding-bottom: 8px; margin-bottom: 8px;
+}
+.q-row { display: flex; justify-content: space-between; color: var(--muted); margin-top: 2px; }
+.q-total {
+  color: var(--text); font-weight: 650; font-size: 0.92rem;
+  border-top: 1px solid var(--border); margin-top: 6px; padding-top: 6px;
+}
+.q-meta { color: var(--muted); margin-top: 6px; font-size: 0.74rem; }
+.q-notes { font-style: italic; }
 
 .placeholder { color: var(--muted); font-size: 0.85rem; font-style: italic; }

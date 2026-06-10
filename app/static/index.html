@@ -24,6 +24,7 @@
   <button class="tab active" data-tab="agent">1 &middot; Business Agent</button>
   <button class="tab" data-tab="workflow">2 &middot; Morning Workflow</button>
   <button class="tab" data-tab="documents">3 &middot; Document Analysis</button>
+  <button class="tab" data-tab="quote">4 &middot; Quote Builder</button>
   <button id="reset-btn" title="Clear chat, outbox, and activity">Reset demo</button>
 </nav>
 
@@ -88,6 +89,32 @@
       <div class="doc-result-col">
         <h3>Agent analysis</h3>
         <div id="doc-result" class="summary-box"><span class="placeholder">Select a document and click Analyze.</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="panel-quote" class="panel">
+    <div class="doc-head">
+      <h2>Quote Builder</h2>
+      <p>Paste a customer request, or pick one below. The agent prices it from the company pricing sheet, does every calculation with a <strong>calculator tool</strong> &mdash; language models are bad at arithmetic, so the agent doesn't do math in its head &mdash; and produces a formal quote for the owner to review.</p>
+    </div>
+    <div class="chips" id="quote-chips">
+      <button class="chip">Neches Industrial needs 12 custom 316 stainless pump shaft sleeves, about 3 machining hours each, material runs $85 a piece. They asked for our best price and delivery.</button>
+      <button class="chip">Sabine River Chemical has a plant-down emergency: one replacement impeller shaft in Inconel 718, about 9 machining hours, material is $610. They need it inside 48 hours.</button>
+      <button class="chip">Repeat order from Acadian Pipe &amp; Supply: 40 pieces of the flange adapter we ran last fall. First run priced out at $52 a piece. Quote the rerun.</button>
+    </div>
+    <form id="quote-form" class="composer">
+      <input id="quote-input" type="text" placeholder="Describe the customer request&hellip;" autocomplete="off">
+      <button type="submit" id="quote-send">Build quote</button>
+    </form>
+    <div class="quote-cols">
+      <div class="quote-result-col">
+        <h3>Agent summary</h3>
+        <div id="quote-summary" class="summary-box"><span class="placeholder">Pick a request and the agent will price it.</span></div>
+      </div>
+      <div class="quote-card-col">
+        <h3>Quotes created <span id="quote-count" class="count"></span></h3>
+        <div id="quote-list"><span class="placeholder">Finished quotes appear here.</span></div>
       </div>
     </div>
   </section>

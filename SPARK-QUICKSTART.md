@@ -42,6 +42,7 @@ Click through this checklist the first time, and again the morning of the visit:
 - [ ] **Tab 1:** Click the third suggestion chip — an email draft appears, written like a machine shop, not like a press release
 - [ ] **Tab 2:** Run Morning Workflow — all 6 emails triaged, drafts appear on the right, and the agent catches that Sabine River Chemical's expedite fee should be waived
 - [ ] **Tab 3:** Analyze the invoice — it flags the wrongly-charged $1,475.25 expedite fee
+- [ ] **Tab 4:** Click the Sabine River plant-down request — every number runs through the `calculate` tool (watch the activity panel), the quote card shows the expedite fee waived per contract, and the Inconel quote is marked valid 10 days
 - [ ] The ⚡ tokens/sec badge in the header shows a number that feels fast (gpt-oss:120b on the Spark should be comfortably above reading speed)
 - [ ] Click **Reset demo** — everything clears
 

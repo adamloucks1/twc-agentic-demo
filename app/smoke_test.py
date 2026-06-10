@@ -63,6 +63,20 @@ def tool_sanity():
     return "tools read data correctly"
 
 
+def calculator_sanity():
+    out = agent.tool_calculate({"expression": "12 * (3*115 + 85*1.15)"})
+    assert "5,313" in out, out
+    out = agent.tool_calculate({"expression": "import os"})
+    assert out.startswith("ERROR"), "calculator must reject non-arithmetic"
+    out = agent.tool_calculate({"expression": "1/0"})
+    assert out.startswith("ERROR"), "calculator must handle division by zero"
+    agent.tool_save_quote({"customer": "Smoke Test Co.", "line_items": "1 x test",
+                           "subtotal": 1, "total": 1, "lead_time": "1 week"})
+    assert len(agent.QUOTES) == 1
+    agent.QUOTES.clear()
+    return "calculate + save_quote behave"
+
+
 def live_agent_loop():
     """One real agent run: must call at least one tool and produce text."""
     events = list(agent.run_agent(
@@ -85,6 +99,7 @@ if __name__ == "__main__":
     check("Ollama running", ollama_up)
     check("model pulled", model_present)
     check("tool implementations", tool_sanity)
+    check("calculator + quote tools", calculator_sanity)
     check("live agent loop (takes 10-60s)", live_agent_loop)
     print()
     if failures:

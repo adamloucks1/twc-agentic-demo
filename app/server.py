@@ -59,6 +59,7 @@ class Handler(BaseHTTPRequestHandler):
             self._send_json({
                 "inbox": inbox,
                 "outbox": agent.OUTBOX,
+                "quotes": agent.QUOTES,
                 "documents": sorted(os.listdir(agent.DOCS_DIR)),
                 "context_files": sorted(os.listdir(agent.CONTEXT_DIR)),
                 "model": agent.CONFIG["model"],
@@ -132,6 +133,7 @@ class Handler(BaseHTTPRequestHandler):
 
         if self.path == "/api/reset":
             agent.OUTBOX.clear()
+            agent.QUOTES.clear()
             self._send_json({"ok": True})
             return
 

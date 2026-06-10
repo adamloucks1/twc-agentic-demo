@@ -3,7 +3,9 @@ Agent engine for the TWC offline demo.
 Runs a tool-use loop against a local Ollama instance. Python stdlib only.
 """
 
+import ast
 import json
+import operator
 import os
 import time
 import urllib.request
@@ -19,6 +21,9 @@ with open(os.path.join(BASE_DIR, "config.json"), "r", encoding="utf-8") as f:
 
 # In-memory outbox: drafts the agent saves during a session.
 OUTBOX = []
+
+# In-memory quotes: customer quotes the agent builds during a session.
+QUOTES = []
 
 MAX_TURNS = 16  # safety cap on the agent loop
 
@@ -77,6 +82,76 @@ def tool_list_documents(args):
     return "\n".join(sorted(os.listdir(DOCS_DIR)))
 
 
+_CALC_OPS = {
+    ast.Add: operator.add, ast.Sub: operator.sub, ast.Mult: operator.mul,
+    ast.Div: operator.truediv, ast.Mod: operator.mod, ast.Pow: operator.pow,
+}
+
+
+def _calc_eval(node):
+    if isinstance(node, ast.Expression):
+        return _calc_eval(node.body)
+    if isinstance(node, ast.Constant) and isinstance(node.value, (int, float)):
+        return node.value
+    if isinstance(node, ast.UnaryOp) and isinstance(node.op, (ast.USub, ast.UAdd)):
+        v = _calc_eval(node.operand)
+        return -v if isinstance(node.op, ast.USub) else v
+    if isinstance(node, ast.BinOp) and type(node.op) in _CALC_OPS:
+        left, right = _calc_eval(node.left), _calc_eval(node.right)
+        if isinstance(node.op, ast.Pow) and abs(right) > 8:
+            raise ValueError("exponent too large")
+        return _CALC_OPS[type(node.op)](left, right)
+    raise ValueError(f"unsupported syntax: {type(node).__name__}")
+
+
+def tool_calculate(args):
+    # Models sprinkle $ signs and thousands separators into expressions;
+    # strip them rather than bouncing the call.
+    expr = str(args.get("expression", "")).replace("$", "").replace(",", "").strip()
+    if not expr:
+        return ('ERROR: calculate takes exactly one argument named "expression" '
+                'containing the arithmetic as a string, like '
+                '{"expression": "12*(3*115 + 85*1.15)"}. Try again.')
+    try:
+        value = _calc_eval(ast.parse(expr, mode="eval"))
+    except ZeroDivisionError:
+        return "ERROR: division by zero."
+    except (ValueError, SyntaxError) as e:
+        return f"ERROR: cannot evaluate ({e}). Use plain arithmetic like 12 * (3*115 + 85*1.15)."
+    rounded = round(value, 2)
+    if rounded == int(rounded):
+        rounded = int(rounded)
+    return f"{expr} = {rounded:,}"
+
+
+def tool_save_quote(args):
+    missing = [k for k in ("customer", "line_items", "total", "lead_time")
+               if not str(args.get(k, "")).strip()]
+    if missing:
+        return (f"ERROR: quote NOT saved - missing field(s): {', '.join(missing)}. "
+                "Call save_quote again with every field filled in.")
+    try:
+        subtotal = float(args.get("subtotal", 0))
+        total = float(args.get("total", 0))
+    except (TypeError, ValueError):
+        return "ERROR: quote NOT saved - subtotal and total must be numbers."
+    if total < subtotal:
+        return (f"ERROR: quote NOT saved - total ({total}) is less than subtotal "
+                f"({subtotal}). Recompute with the calculate tool and try again.")
+    quote = {
+        "customer": str(args.get("customer", "")),
+        "line_items": str(args.get("line_items", "")),
+        "subtotal": args.get("subtotal", 0),
+        "expedite_fee": args.get("expedite_fee", 0),
+        "total": args.get("total", 0),
+        "lead_time": str(args.get("lead_time", "")),
+        "valid_days": args.get("valid_days", 30),
+        "notes": str(args.get("notes", "")),
+    }
+    QUOTES.append(quote)
+    return f"Quote saved for {quote['customer']} ({len(QUOTES)} total)."
+
+
 def tool_read_document(args):
     path = _safe_name(args.get("filename", ""), DOCS_DIR)
     if not path:
@@ -93,6 +168,8 @@ TOOL_IMPLS = {
     "save_draft": tool_save_draft,
     "list_documents": tool_list_documents,
     "read_document": tool_read_document,
+    "calculate": tool_calculate,
+    "save_quote": tool_save_quote,
 }
 
 TOOL_DEFS = [
@@ -130,6 +207,27 @@ TOOL_DEFS = [
         }, "required": ["to", "subject", "body"]},
     }},
     {"type": "function", "function": {
+        "name": "calculate",
+        "description": "Evaluate an arithmetic expression exactly. Use this for ALL math - never compute numbers in your head. Supports + - * / % ** and parentheses.",
+        "parameters": {"type": "object", "properties": {
+            "expression": {"type": "string", "description": "e.g. 12 * (3*115 + 85*1.15)"},
+        }, "required": ["expression"]},
+    }},
+    {"type": "function", "function": {
+        "name": "save_quote",
+        "description": "Save the finished customer quote for owner review. Every number must come from the calculate tool.",
+        "parameters": {"type": "object", "properties": {
+            "customer": {"type": "string", "description": "Customer/company name"},
+            "line_items": {"type": "string", "description": "One line per item: 'qty x description @ $unit each = $line_total'. Include material as its own line when priced separately."},
+            "subtotal": {"type": "number", "description": "Sum of line items before any fees"},
+            "expedite_fee": {"type": "number", "description": "Dollar amount of any expedite fee. 0 if none or waived (explain waivers in notes)."},
+            "total": {"type": "number"},
+            "lead_time": {"type": "string", "description": "Realistic delivery window from the lead-time table, e.g. '1-2 weeks'"},
+            "valid_days": {"type": "integer", "description": "30 normally; 10 for exotic materials (Inconel, Monel)"},
+            "notes": {"type": "string", "description": "Contract terms applied, fee waivers, deposit requirements, anything the owner should double-check"},
+        }, "required": ["customer", "line_items", "subtotal", "total", "lead_time"]},
+    }},
+    {"type": "function", "function": {
         "name": "list_documents",
         "description": "List documents available for analysis (invoices, reports, letters).",
         "parameters": {"type": "object", "properties": {}, "required": []},
@@ -150,6 +248,8 @@ SCENARIO_TOOLS = {
                  "read_email", "save_draft", "list_documents", "read_document"],
     "documents": ["list_context_files", "read_context_file",
                   "list_documents", "read_document"],
+    "quote": ["list_context_files", "read_context_file",
+              "calculate", "save_quote"],
     "chatbot": [],  # the "plain chatbot" toggle: same model, no tools, no context
 }
 
@@ -207,6 +307,36 @@ SYSTEM_PROMPTS = {
         "tool call.\n\n"
         + VOICE_RULE
     ),
+    "quote": (
+        "You are the business agent for Gulf Coast Machining Co., a CNC machine "
+        "shop in Beaumont, Texas. You are building a CUSTOMER QUOTE from a "
+        "request.\n\n"
+        "Do this, in order:\n"
+        "1. Read pricing-and-leadtimes.md with the read_context_file tool. "
+        "Every price and lead time comes from there.\n"
+        "2. Use the calculate tool once per line item, passing one full "
+        "arithmetic expression built from the pricing sheet rules (shop rate "
+        "per hour, material at cost + 15%, repeat parts about 20% cheaper "
+        "than first run, expedite fees, per-customer contract terms). NEVER "
+        "do arithmetic yourself - language models get math wrong, the "
+        "calculator does not.\n"
+        "3. Call calculate again for the subtotal and total.\n"
+        "4. Call save_quote with the finished quote. Pick the lead time from "
+        "the lead-time table. Set valid_days to 10 for exotic materials "
+        "(Inconel, Monel), 30 otherwise. Note any contract terms you applied "
+        "(like waived expedite fees) in notes.\n"
+        "5. Only after save_quote succeeds, write a 2-3 sentence summary for "
+        "the owner: the total, the lead time, and anything to double-check.\n\n"
+        "HARD RULES:\n"
+        "- calculate and save_quote are real tools. CALL them. NEVER write "
+        "tool names, JSON, or tool syntax inside your text reply.\n"
+        "- Never invent prices. Every number comes from the pricing sheet or "
+        "the customer's request, combined via the calculate tool.\n"
+        "- Add an expedite fee ONLY if the customer asked for rush or "
+        "emergency turnaround. Normal orders get no fee.\n"
+        "- Check the pricing sheet for customer-specific contract terms "
+        "(e.g. expedite fee waivers) before adding fees."
+    ),
     "documents": (
         "You are the business agent for Gulf Coast Machining Co., a CNC machine "
         "shop in Beaumont, Texas. The user will ask you to analyze a document. "
@@ -228,7 +358,8 @@ def _ollama_chat_stream(messages, tools):
         "model": CONFIG["model"],
         "messages": messages,
         "stream": True,
-        "options": {"num_ctx": CONFIG.get("num_ctx", 16384)},
+        "options": {"num_ctx": CONFIG.get("num_ctx", 16384),
+                    "temperature": CONFIG.get("temperature", 0.2)},
     }
     if tools:
         payload["tools"] = tools
@@ -356,6 +487,8 @@ def run_agent(scenario, history, user_message):
                 yield {"type": "tool_result", "name": name, "preview": preview}
                 if name == "save_draft":
                     yield {"type": "outbox", "drafts": list(OUTBOX)}
+                if name == "save_quote":
+                    yield {"type": "quote", "quotes": list(QUOTES)}
 
                 messages.append({"role": "tool", "content": result,
                                  "tool_name": name})

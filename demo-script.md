@@ -1,6 +1,6 @@
 # TWC Demo — Run of Show
 
-**Length:** 12-15 minutes plus questions
+**Length:** 15-18 minutes plus questions (Act 4 is optional — cut it if time is short)
 **Setup before they walk in:** Spark running, `run_demo.sh` already launched, browser open on Tab 1, Reset demo clicked. Network disconnected.
 
 ---
@@ -47,6 +47,18 @@ The wow moment. Narrate over the activity panel while it runs.
 
 1. Pick **invoice-sabine-river.txt** → Analyze. The agent should flag the wrongly-charged $1,475 expedite fee against the contract waiver.
 2. If time, run **safety-incident-report.txt**: it extracts the near-miss, the root causes, and the open corrective actions — relevant for every plant-adjacent SMB in our region.
+
+## Act 4 — Quote Builder (3 min) — Tab 4
+
+The teaching moment: **language models are bad at arithmetic.** Ask any chatbot to multiply three numbers and it will confidently get it wrong. Agents solve this by handing math to a calculator tool.
+
+1. Click the **Sabine River plant-down** request chip. Narrate the activity panel:
+   - It reads the pricing sheet
+   - Every number goes through the `calculate` tool — point at the calls firing: "Watch — it never does math in its head. Each calculation is a tool call, exact every time."
+   - It catches that Sabine River's contract **waives the 35% expedite fee**, and that Inconel quotes are only valid 10 days
+2. The formal quote card appears on the right: line items, subtotal, total, lead time, validity.
+
+> Talking point: "This is the lesson we teach on tools day. You don't need a smarter model to get reliable numbers — you need an agent that knows what models are bad at and uses a tool instead. A quote that used to take an hour of looking things up takes one paste."
 
 ## Close (1 min)
 

@@ -38,11 +38,12 @@ Goal: the Spark runs the whole demo with **zero internet** on demo day. Internet
 ./run_demo.sh
 ```
 
-Browser opens at http://localhost:8765. Run all three tabs end to end. Things to check:
+Browser opens at http://localhost:8765. Run all four tabs end to end. Things to check:
 
 - [ ] Chatbot vs. Agent toggle: chatbot says "I don't know your pricing," agent reads the file and answers correctly
 - [ ] Morning Workflow: triages all 6 emails, catches the expedite-fee waiver for Sabine River Chemical, drafts land in the outbox
 - [ ] Document Analysis: on the invoice, the agent should flag the wrongly-charged expedite fee against the contract waiver
+- [ ] Quote Builder: on the Sabine River plant-down request, every number goes through the calculate tool, the expedite fee shows as waived per contract, and the Inconel quote is valid 10 days
 - [ ] Response speed feels demo-appropriate (gpt-oss:120b on the Spark should stream fast)
 - [ ] If output quality or speed disappoints, switch config.json to the other model and retest
 
