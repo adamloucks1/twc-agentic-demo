@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Agentic AI Demo — Lamar CDAC</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header>
+  <div class="brand">
+    <div class="brand-title">Gulf Coast Machining Co. <span class="brand-sub">Business Agent</span></div>
+    <div class="brand-org">Lamar University &middot; Center for Data, AI, and Cybersecurity</div>
+  </div>
+  <div class="badges">
+    <span class="badge badge-local">&#9679; 100% LOCAL &mdash; NO INTERNET</span>
+    <span class="badge badge-hw" id="hw-badge" style="display:none"></span>
+    <span class="badge badge-model" id="model-badge">model: &hellip;</span>
+    <span class="badge badge-stats" id="stats-badge" style="display:none"></span>
+  </div>
+</header>
+
+<nav>
+  <button class="tab active" data-tab="agent">1 &middot; Business Agent</button>
+  <button class="tab" data-tab="workflow">2 &middot; Morning Workflow</button>
+  <button class="tab" data-tab="documents">3 &middot; Document Analysis</button>
+  <button id="reset-btn" title="Clear chat, outbox, and activity">Reset demo</button>
+</nav>
+
+<main>
+  <!-- ============ left column: scenario panels ============ -->
+  <section id="panel-agent" class="panel active">
+    <div class="panel-bar">
+      <div class="mode-toggle">
+        <span>Plain chatbot</span>
+        <label class="switch">
+          <input type="checkbox" id="agent-mode" checked>
+          <span class="slider"></span>
+        </label>
+        <span>Agent <small>(tools + business context)</small></span>
+      </div>
+    </div>
+    <div class="chat" id="chat-log"></div>
+    <div class="chips" id="chips">
+      <button class="chip">What's our lead time on custom Inconel parts right now?</button>
+      <button class="chip">A new customer wants a $9,000 order. What terms do we give them?</button>
+      <button class="chip">Draft an email to Jenny at Neches Industrial telling her the flange quote will be ready tomorrow morning.</button>
+    </div>
+    <form id="chat-form" class="composer">
+      <input id="chat-input" type="text" placeholder="Ask the business agent anything&hellip;" autocomplete="off">
+      <button type="submit" id="chat-send">Send</button>
+    </form>
+  </section>
+
+  <section id="panel-workflow" class="panel">
+    <div class="workflow-head">
+      <div>
+        <h2>Morning Email Workflow</h2>
+        <p>The agent reads the inbox, triages every email, drafts replies in the company voice, checks invoices against contracts, and writes the owner a summary. <strong>One click. Watch the activity panel.</strong></p>
+      </div>
+      <button id="run-workflow" class="big-btn">&#9654; Run Morning Workflow</button>
+    </div>
+    <div class="workflow-cols">
+      <div class="wf-col">
+        <h3>Inbox <span id="inbox-count" class="count"></span></h3>
+        <div id="inbox-list" class="mail-list"></div>
+      </div>
+      <div class="wf-col">
+        <h3>Drafts created by agent <span id="outbox-count" class="count"></span></h3>
+        <div id="outbox-list" class="mail-list"></div>
+      </div>
+    </div>
+    <h3 class="summary-title">Owner summary</h3>
+    <div id="workflow-summary" class="summary-box"><span class="placeholder">Run the workflow to generate the morning summary.</span></div>
+  </section>
+
+  <section id="panel-documents" class="panel">
+    <div class="doc-head">
+      <h2>Document Analysis</h2>
+      <p>Pick a document. The agent reads it, extracts the facts, flags problems, and recommends actions &mdash; cross-checking company records.</p>
+    </div>
+    <div class="doc-cols">
+      <div class="doc-list-col">
+        <div id="doc-list"></div>
+        <button id="analyze-doc" class="big-btn" disabled>Analyze document</button>
+        <pre id="doc-preview" class="doc-preview"></pre>
+      </div>
+      <div class="doc-result-col">
+        <h3>Agent analysis</h3>
+        <div id="doc-result" class="summary-box"><span class="placeholder">Select a document and click Analyze.</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ right column: agent activity ============ -->
+  <aside id="activity">
+    <h3>Agent Activity <span class="live-dot" id="live-dot"></span></h3>
+    <div id="activity-log">
+      <div class="placeholder">Every step the agent takes shows up here &mdash; the difference between a chatbot and an agent.</div>
+    </div>
+  </aside>
+</main>
+
+<script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,44 @@
+[
+  {
+    "id": 1,
+    "from": "Marcus Boudreaux <m.boudreaux@sabineriverchem.com>",
+    "subject": "URGENT - pump shaft failure unit 3",
+    "received": "6:42 AM",
+    "body": "Cheryl - we had a pump shaft let go on unit 3 overnight. Plant is running on the spare but we need a replacement machined ASAP. Same part as the one y'all did in February, PO 24-1187, 316SS. Can you confirm you still have the program on file and give me a turnaround time this morning? This is a plant-down priority for us. Marcus"
+  },
+  {
+    "id": 2,
+    "from": "Jenny Tran <jtran@nechesindustrial.com>",
+    "subject": "Quote request - 2\" 150# flanges qty 40",
+    "received": "7:15 AM",
+    "body": "Good morning, can I get a quote on forty 2-inch 150# raised face slip-on flanges, A105 carbon steel? Customer is asking for delivery in 3 weeks. Also do you give a break at qty 40 vs our usual 25? Thanks, Jenny"
+  },
+  {
+    "id": 3,
+    "from": "Rick Delacroix <rick.d@texlapipeline.com>",
+    "subject": "Re: valve stem order - wrong surface finish?",
+    "received": "7:58 AM",
+    "body": "Dale, the valve stems we picked up Friday are measuring rougher than spec on the sealing surface. Print calls for 16 Ra and our QC is reading 28-32 on three of the eight pieces. We need these for a job Wednesday. What can you do for us? Rick"
+  },
+  {
+    "id": 4,
+    "from": "Brandon Wells <bwells@apexcuttingtools.io>",
+    "subject": "Cut tooling costs 30% - quick call this week?",
+    "received": "8:20 AM",
+    "body": "Hi there! I'm reaching out to machine shops in the Beaumont area about our new carbide insert program. Shops like yours are saving up to 30% on tooling. Do you have 15 minutes this week for a quick call? I can also send over a free sample pack. Best, Brandon Wells, Apex Cutting Tools"
+  },
+  {
+    "id": 5,
+    "from": "Sandra Okafor <sokafor@gulfcoastfab.com>",
+    "subject": "New customer - machining capacity question",
+    "received": "8:47 AM",
+    "body": "Hello, we're a fabrication shop in Port Arthur and our usual machining vendor just closed their doors. We'd have steady work, mostly carbon steel weld-neck flanges and misc fittings, maybe $8-12k a month. Before we send drawings, can you tell me your typical lead times and payment terms for a new account? Sandra Okafor, Purchasing, Gulf Coast Fabrication"
+  },
+  {
+    "id": 6,
+    "from": "Marcus Boudreaux <m.boudreaux@sabineriverchem.com>",
+    "subject": "invoice question INV-2641",
+    "received": "9:03 AM",
+    "body": "Cheryl, separate from the pump shaft thing - our AP flagged invoice INV-2641. It shows a 35% expedite fee on the April rush job but I thought our contract waives that. Can you check? Not holding payment, just want it cleaned up. Marcus"
+  }
+]

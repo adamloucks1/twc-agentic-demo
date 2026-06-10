@@ -1,0 +1,39 @@
+GULF COAST MACHINING CO. - INCIDENT/NEAR MISS REPORT
+Form S-3, Rev 2024
+
+Report #: 2026-007
+Date of incident: June 2, 2026, approx 2:40 PM
+Location: Bay 2, lathe #4 (Mazak QT-350)
+Reported by: T. Guidry (shift lead)
+Type: NEAR MISS - no injury
+
+DESCRIPTION:
+Operator was turning a 14" diameter 4140 steel blank for a flange
+order. Chuck jaw retention bolt on jaw #2 backed out during a
+roughing pass at 380 RPM. The jaw shifted but did not separate
+from the chuck. Operator heard the change in sound, hit e-stop.
+Part was scrapped (out of round). No tool or guard contact, no
+injury. Machine inspected - chuck removed for service.
+
+CONTRIBUTING FACTORS:
+- Retention bolts last torqued at jaw change ~3 weeks prior, no
+  log entry found for torque check since
+- Torque check is on the monthly PM sheet but Bay 2's May PM
+  was signed off with the lathe section left blank
+- New operator (4 months) had not been trained to do visual
+  jaw bolt check at setup - this is tribal knowledge, not in
+  the setup checklist
+
+IMMEDIATE ACTIONS TAKEN:
+- Lathe #4 tagged out until chuck serviced and bolts replaced
+- All other lathes' chuck bolts torque-verified same day (all OK)
+
+RECOMMENDED CORRECTIVE ACTIONS (open):
+1. Add jaw bolt visual check to the written setup checklist
+2. Investigate why May PM was signed incomplete
+3. Add torque verification to weekly (not monthly) PM for lathes
+   running interrupted cuts
+4. Brief all operators at Monday toolbox talk
+
+Supervisor signature: D. Fontenot   Date: June 3, 2026
+Status: OPEN - corrective actions not yet verified

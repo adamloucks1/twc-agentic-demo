@@ -1,0 +1,33 @@
+GULF COAST MACHINING CO.
+4810 Highland Ave, Beaumont, TX 77705
+(409) 555-0147 | office@gulfcoastmachining.com
+
+INVOICE
+
+Invoice #: INV-2641
+Date: April 18, 2026
+Terms: NET 30
+Due: May 18, 2026
+
+BILL TO:
+Sabine River Chemical
+Attn: Accounts Payable
+2200 Chemical Row Dr
+Orange, TX 77630
+Customer PO: 26-0412 (RUSH)
+
+--------------------------------------------------------------
+ITEM                                    QTY   UNIT       TOTAL
+--------------------------------------------------------------
+Pump impeller shaft, 316SS, per          2   $1,840.00  $3,680.00
+  drawing SRC-PS-114 Rev C
+Setup & programming                      1     $460.00    $460.00
+Material cert package (EN 10204 3.1)     1      $75.00     $75.00
+Expedite fee (35% - rush turnaround)     1   $1,475.25  $1,475.25
+--------------------------------------------------------------
+                                    SUBTOTAL:           $5,690.25
+                                    TAX (exempt - mfg):     $0.00
+                                    TOTAL DUE:          $5,690.25
+
+Notes: Rush order completed in 52 hours per customer request.
+Thank you for your business.
