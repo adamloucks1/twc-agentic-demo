@@ -1,8 +1,8 @@
 {
   "model": "llama3.1:8b",
   "ollama_url": "http://localhost:11434",
-  "num_ctx": 16384,
+  "num_ctx": 8192,
   "port": 8765,
   "hardware_label": "",
-  "_comment": "On the DGX Spark set model to gpt-oss:120b (fallback: qwen3:30b) and hardware_label to 'NVIDIA DGX Spark - 128GB unified memory'. llama3.1:8b is for testing on a normal PC."
+  "_comment": "On the DGX Spark set model to gpt-oss:120b (fallback: qwen3:30b), num_ctx to 16384, and hardware_label to 'NVIDIA DGX Spark - 128GB unified memory'. llama3.1:8b + num_ctx 8192 is for testing on a normal PC (8192 fits more layers in a small GPU)."
 }

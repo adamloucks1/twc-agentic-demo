@@ -36,6 +36,7 @@ import json
 with open("config.json") as f:
     cfg = json.load(f)
 cfg["model"] = "$MODEL"
+cfg["num_ctx"] = 16384
 cfg["hardware_label"] = "NVIDIA DGX Spark · 128GB unified memory"
 with open("config.json", "w") as f:
     json.dump(cfg, f, indent=2)

@@ -31,6 +31,10 @@ Double-click `run_demo` on the Spark → browser opens → live demo, no interne
 - [ ] **Loop 2:** Deploy to the DGX Spark with `gpt-oss:120b`; test speed and output quality, tune prompts
 - [ ] **Loop 3:** Dry run against `demo-script.md`; record backup video; final polish
 
+## Distribution
+
+Published at **https://github.com/adamloucks1/twc-agentic-demo** (public). The Spark gets it via `git clone`, no USB, no login — see `SPARK-QUICKSTART.md`. This folder remains the source of truth; after changes here, re-push to that repo so the Spark can `git pull`.
+
 ## Files
 
 - `app/` — the demo app (zero pip dependencies, Python stdlib only; needs only Python 3.9+ and Ollama)

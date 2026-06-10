@@ -124,9 +124,9 @@ TOOL_DEFS = [
         "name": "save_draft",
         "description": "Save a reply draft to the outbox for human review. Use the company email voice.",
         "parameters": {"type": "object", "properties": {
-            "to": {"type": "string"},
-            "subject": {"type": "string"},
-            "body": {"type": "string"},
+            "to": {"type": "string", "description": "Recipient name and email address exactly as shown in the original email's From line, e.g. 'Jenny Tran <jtran@nechesindustrial.com>'"},
+            "subject": {"type": "string", "description": "Reply subject line, e.g. 'Re: ...'"},
+            "body": {"type": "string", "description": "Full email body in the company voice"},
         }, "required": ["to", "subject", "body"]},
     }},
     {"type": "function", "function": {
@@ -184,19 +184,27 @@ SYSTEM_PROMPTS = {
     "workflow": (
         "You are the business agent for Gulf Coast Machining Co., a CNC machine "
         "shop in Beaumont, Texas. You are running the MORNING EMAIL WORKFLOW.\n\n"
-        "Follow these steps exactly:\n"
-        "1. Read the business context files first (pricing-and-leadtimes.md and "
-        "voice-and-policies.md at minimum).\n"
-        "2. List the inbox, then read every email.\n"
-        "3. Triage each email: URGENT (plant-down, quality complaint), NORMAL "
-        "(quotes, new customers), or LOW (vendor pitches).\n"
-        "4. For every email that deserves a reply, draft one with save_draft, "
-        "following the company voice and the policies (rush policy, expedite "
-        "fee waivers, new customer terms, vendor pitch handling). Check the "
-        "policies carefully - some customers have special contract terms.\n"
-        "5. If an email references an invoice or document you can check, check it.\n"
-        "6. Finish with a short MORNING SUMMARY for the owner: each email, its "
-        "priority, what you did, and anything that needs a human decision.\n\n"
+        "The inbox list, pricing/lead-time sheet, and email voice policy are "
+        "already loaded above as tool results. Now:\n"
+        "1. For each email in the inbox, call read_email with its id, one at a "
+        "time.\n"
+        "2. Triage it: URGENT (plant-down, quality complaint), NORMAL (quotes, "
+        "new customers), or LOW (vendor pitches).\n"
+        "3. If it deserves a reply, call save_draft, following the company "
+        "voice and the policies (rush policy, expedite fee waivers, new "
+        "customer terms, vendor pitch handling). Some customers have special "
+        "contract terms - check the pricing sheet carefully.\n"
+        "4. If an email references an invoice, call read_document to verify it "
+        "against the contract terms before replying.\n"
+        "5. After ALL emails are handled, write the MORNING SUMMARY for the "
+        "owner as plain text: each email, its priority, what you did, and "
+        "anything needing a human decision.\n\n"
+        "HARD RULES:\n"
+        "- Every action MUST be a real tool call. NEVER write tool names, "
+        "JSON, or tool syntax inside your text reply.\n"
+        "- Do not invent emails, names, or facts. Only use what tools return.\n"
+        "- Your only text output is the final MORNING SUMMARY, after the last "
+        "tool call.\n\n"
         + VOICE_RULE
     ),
     "documents": (
@@ -259,12 +267,38 @@ def run_agent(scenario, history, user_message):
     messages.extend(history)
     messages.append({"role": "user", "content": user_message})
 
+    # Workflow prefetch: load the inbox and key context files into the
+    # conversation as real tool exchanges. Deterministic, instant activity in
+    # the UI, and small models don't have to be trusted to fetch them.
+    prefetch = []
+    if scenario == "workflow":
+        prefetch = [
+            ("list_inbox", {}),
+            ("read_context_file", {"filename": "pricing-and-leadtimes.md"}),
+            ("read_context_file", {"filename": "voice-and-policies.md"}),
+        ]
+
     start = time.time()
     total_tokens = 0
     total_eval_ns = 0
     total_tool_calls = 0
 
     try:
+        if prefetch:
+            calls = [{"function": {"name": n, "arguments": a}}
+                     for n, a in prefetch]
+            messages.append({"role": "assistant", "content": "",
+                             "tool_calls": calls})
+            for name, args in prefetch:
+                total_tool_calls += 1
+                yield {"type": "tool_call", "name": name, "args": args}
+                result = TOOL_IMPLS[name](args)
+                preview = (result if len(result) <= 400
+                           else result[:400] + " ...")
+                yield {"type": "tool_result", "name": name, "preview": preview}
+                messages.append({"role": "tool", "content": result,
+                                 "tool_name": name})
+
         for turn in range(MAX_TURNS):
             content_parts = []
             thinking_parts = []
